@@ -23,7 +23,7 @@
             border-radius: 15px;
             padding: 30px;
             text-align: center;
-            width: 320px;  /* Fixed width for consistency */
+            width: 320px;
             max-width: 100%;
             display: flex;
             flex-direction: column;
@@ -33,16 +33,16 @@
 
         .time {
             font-size: 48px;
-            margin-bottom: 30px;  /* Increased margin for better spacing */
+            margin-bottom: 30px;
             text-align: center;
         }
 
         .buttons {
             display: flex;
             justify-content: space-between;
-            gap: 10px;  /* Added gap between buttons */
-            width: 100%;  /* Ensures buttons span full width */
-            justify-content: center;  /* Centers the buttons horizontally */
+            gap: 10px;
+            width: 100%;
+            justify-content: center;
         }
 
         button {
@@ -54,10 +54,10 @@
             font-size: 16px;
             cursor: pointer;
             transition: background 0.3s;
-            width: 70px;  /* Uniform button size */
+            width: 70px;
             display: flex;
             justify-content: center;
-            align-items: center;  /* Center text horizontally and vertically */
+            align-items: center;
         }
 
         button:hover {
@@ -67,8 +67,8 @@
         .laps {
             margin-top: 20px;
             text-align: left;
-            overflow-y: auto;  /* Prevent overflow in lap list */
-            max-height: 150px;  /* Limit the height of lap list */
+            overflow-y: auto;
+            max-height: 150px;
             width: 100%;
         }
 
@@ -82,7 +82,7 @@
             padding: 10px;
             margin: 5px 0;
             border-radius: 5px;
-            text-align: center;  /* Centers the text inside each lap */
+            text-align: center;
         }
     </style>
 </head>
@@ -120,7 +120,7 @@
             const minutes = String(date.getUTCMinutes()).padStart(2, '0');
             const seconds = String(date.getUTCSeconds()).padStart(2, '0');
             const milliseconds = String(date.getUTCMilliseconds()).padStart(3, '0').slice(0, 2);
-            return ${minutes}:${seconds}.${milliseconds};
+            return `${minutes}:${seconds}.${milliseconds}`;
         }
 
         function updateDisplay() {
@@ -129,10 +129,10 @@
         }
 
         startStopButton.addEventListener('click', () => {
-            if (isRunning || isPaused) {
+            if (isRunning) {
                 clearInterval(timerInterval);
                 startStopButton.textContent = 'Start';
-                pauseButton.disabled = false;
+                pauseButton.disabled = true;
             } else {
                 startTime = Date.now() - elapsedTime;
                 timerInterval = setInterval(updateDisplay, 10);
@@ -144,9 +144,11 @@
         });
 
         pauseButton.addEventListener('click', () => {
-            clearInterval(timerInterval);
-            startStopButton.textContent = 'Resume';
-            isPaused = true;
+            if (isRunning) {
+                clearInterval(timerInterval);
+                startStopButton.textContent = 'Resume';
+                isPaused = true;
+            }
         });
 
         resetButton.addEventListener('click', () => {
@@ -172,3 +174,4 @@
     </script>
 </body>
 </html>
+
