@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stopwatch</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .stopwatch {
+            background: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            width: 320px;  /* Fixed width for consistency */
+            max-width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .time {
+            font-size: 48px;
+            margin-bottom: 30px;  /* Increased margin for better spacing */
+            text-align: center;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;  /* Added gap between buttons */
+            width: 100%;  /* Ensures buttons span full width */
+            justify-content: center;  /* Centers the buttons horizontally */
+        }
+
+        button {
+            background: #4facfe;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 25px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+            width: 70px;  /* Uniform button size */
+            display: flex;
+            justify-content: center;
+            align-items: center;  /* Center text horizontally and vertically */
+        }
+
+        button:hover {
+            background: #007BFF;
+        }
+
+        .laps {
+            margin-top: 20px;
+            text-align: left;
+            overflow-y: auto;  /* Prevent overflow in lap list */
+            max-height: 150px;  /* Limit the height of lap list */
+            width: 100%;
+        }
+
+        .laps ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .laps li {
+            background: #f0f0f0;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            text-align: center;  /* Centers the text inside each lap */
+        }
+    </style>
+</head>
+<body>
+    <div class="stopwatch">
+        <div class="time" id="time">00:00:00.00</div>
+        <div class="buttons">
+            <button id="start-stop">Start</button>
+            <button id="pause" disabled>Pause</button>
+            <button id="reset">Reset</button>
+            <button id="lap">Lap</button>
+        </div>
+        <div class="laps">
+            <h3>Laps</h3>
+            <ul id="laps-list"></ul>
+        </div>
+    </div>
+
+    <script>
+        let startTime = 0;
+        let elapsedTime = 0;
+        let timerInterval;
+        let isRunning = false;
+        let isPaused = false;
+
+        const timeDisplay = document.getElementById('time');
+        const startStopButton = document.getElementById('start-stop');
+        const pauseButton = document.getElementById('pause');
+        const resetButton = document.getElementById('reset');
+        const lapButton = document.getElementById('lap');
+        const lapsList = document.getElementById('laps-list');
+
+        function formatTime(ms) {
+            const date = new Date(ms);
+            const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+            const seconds = String(date.getUTCSeconds()).padStart(2, '0');
+            const milliseconds = String(date.getUTCMilliseconds()).padStart(3, '0').slice(0, 2);
+            return ${minutes}:${seconds}.${milliseconds};
+        }
+
+        function updateDisplay() {
+            elapsedTime = Date.now() - startTime;
+            timeDisplay.textContent = formatTime(elapsedTime);
+        }
+
+        startStopButton.addEventListener('click', () => {
+            if (isRunning || isPaused) {
+                clearInterval(timerInterval);
+                startStopButton.textContent = 'Start';
+                pauseButton.disabled = false;
+            } else {
+                startTime = Date.now() - elapsedTime;
+                timerInterval = setInterval(updateDisplay, 10);
+                startStopButton.textContent = 'Stop';
+                pauseButton.disabled = false;
+            }
+            isRunning = !isRunning;
+            isPaused = false;
+        });
+
+        pauseButton.addEventListener('click', () => {
+            clearInterval(timerInterval);
+            startStopButton.textContent = 'Resume';
+            isPaused = true;
+        });
+
+        resetButton.addEventListener('click', () => {
+            clearInterval(timerInterval);
+            elapsedTime = 0;
+            startTime = 0;
+            isRunning = false;
+            isPaused = false;
+            startStopButton.textContent = 'Start';
+            pauseButton.disabled = true;
+            timeDisplay.textContent = '00:00:00.00';
+            lapsList.innerHTML = '';
+        });
+
+        lapButton.addEventListener('click', () => {
+            if (isRunning || isPaused) {
+                const lapTime = formatTime(elapsedTime);
+                const lapItem = document.createElement('li');
+                lapItem.textContent = lapTime;
+                lapsList.appendChild(lapItem);
+            }
+        });
+    </script>
+</body>
+</html>
